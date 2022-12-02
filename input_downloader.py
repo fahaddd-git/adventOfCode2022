@@ -33,7 +33,6 @@ def main(day_number: int):
         print(":warning::warning: Folder already exists...continuing :star: :star:")
     finally:
         with open(day_path / INPUT_FILE_NAMES, "w") as inputfile:
-            URL = "https://adventofcode.com/2022/day/1/input"
             req = requests.get(URL.substitute(num=day_number), cookies={"session": SESSION_COOKIE})
             if req.text == "Puzzle inputs differ by user.  Please log in to get your puzzle input.\n":
                 print(":giraffe::pancakes:Something went wrong...input not received. Aborting.")
