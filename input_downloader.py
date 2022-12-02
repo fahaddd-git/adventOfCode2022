@@ -6,7 +6,10 @@ import os
 from dotenv import load_dotenv
 from string import Template
 
+# Session token can be gotten from your browser
+# It should be placed in a .env file to be read by this script to make requests.
 load_dotenv()
+
 
 
 URL = Template("https://adventofcode.com/2022/day/$num/input")
