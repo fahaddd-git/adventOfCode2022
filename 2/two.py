@@ -21,26 +21,22 @@ Scissors = 3
 """
 
 INPUT_FILE = Path(__file__).parent.resolve() / "input.txt"
-shapes_score={
+shapes_score = {
     "A": 1,  # Rock
-    "X" : 1,
+    "X": 1,
     "B": 2,  # Paper
-    "Y" : 2,
-    "C" : 3, # Scissors
-    "Z" : 3
+    "Y": 2,
+    "C": 3,  # Scissors
+    "Z": 3,
 }
 
-p1_beats_p2= {
-    "A" : "Z", "B" : "X" , "C" : "Y"
-}
-p2_beats_p1 = {
-    "X" : "C", "Y" : "A", "Z" : "B"
-}
-p1_beats_p2_reverse_lookup = {v: k for k,v in p1_beats_p2.items()}
-p2_beats_p1_reverse_lookup = {v: k for k,v in p2_beats_p1.items()}
+p1_beats_p2 = {"A": "Z", "B": "X", "C": "Y"}
+p2_beats_p1 = {"X": "C", "Y": "A", "Z": "B"}
+p2_beats_p1_reverse_lookup = {v: k for k, v in p2_beats_p1.items()}
+
 
 def part_one():
-    p2_score=0
+    p2_score = 0
     with open(INPUT_FILE, "r") as inputfile:
         for line in inputfile.readlines():
             p1_shape, p2_shape = line.rstrip("\n").split(" ")
@@ -55,7 +51,7 @@ def part_one():
 
 
 def part_two():
-    p2_score=0
+    p2_score = 0
     with open(INPUT_FILE, "r") as inputfile:
         for line in inputfile.readlines():
             p1_shape, p2_shape = line.rstrip("\n").split(" ")
@@ -65,7 +61,7 @@ def part_two():
             # win. determine p2 winning shape + 6
             elif p2_shape == "Z":
                 winning = p2_beats_p1_reverse_lookup[p1_shape]
-                p2_score += shapes_score[winning] + 6 
+                p2_score += shapes_score[winning] + 6
             # lose. find losing shape points
             else:
                 p2_losing_shape = p1_beats_p2[p1_shape]
