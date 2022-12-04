@@ -19,14 +19,14 @@ TEMPLATE_FILENAME = "template.py"
 TEMPLATE_FILEPATH = Path(__file__).parent.resolve() / TEMPLATE_FILENAME
 
 
-def main(day_number: int):
+def main(day_number: int = typer.Argument(..., min=0, max=25)):
     """
     Downloads input to specified folder. Set SESSION_COOKIE in .env file.
     """
     if day_number > 25 or day_number < 1:
         print("[bold red] :boom: Alert! Invalid day selection[/bold red]")
         raise typer.Exit(code=1)
-    day_path = Path(__file__).parent.resolve() / str(day_number)
+    day_path = Path(__file__).parents[1].resolve() / str(day_number)
     SESSION_COOKIE = os.getenv("SESSION_COOKIE")
     if SESSION_COOKIE is None:
         print(
@@ -64,7 +64,7 @@ def main(day_number: int):
     )
     if use_template:
         desired_template_filename = Prompt.ask(
-            "[dark_cyan]:fire_extinguisher::eagle: Enter desired filename without .py:[/dark_cyan]"
+            "[dark_cyan]:fire_extinguisher::eagle: Enter desired filename without .py[/dark_cyan]"
         )
         shutil.copy(TEMPLATE_FILEPATH, day_path / f"{desired_template_filename}.py")
         print(
@@ -72,9 +72,11 @@ def main(day_number: int):
         )
 
     print(
-        f"[yellow1]:star::star:Ready to go at [dark_olive_green1]{day_path}[/dark_olive_green1]![/yellow1]"
+        f"[yellow1]:star::star: Ready to go at [dark_olive_green1]{day_path}[/dark_olive_green1]![/yellow1]"
     )
 
+def poetry_entrypoint():
+    typer.run(main)
 
 if __name__ == "__main__":
     typer.run(main)

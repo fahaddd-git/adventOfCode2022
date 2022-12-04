@@ -4,6 +4,9 @@ version = "0.1.0"
 description = ""
 authors = ["fahaddd-git <awan.fahad@gmail.com>"]
 readme = "README.md"
+packages = [
+    { include = "utilities" },
+]
 
 [tool.poetry.dependencies]
 python = "^3.10"
@@ -15,6 +18,9 @@ python-dotenv = "^0.21.0"
 
 [tool.poetry.group.dev.dependencies]
 black = "^22.10.0"
+
+[tool.poetry.scripts]
+setup = "utilities.setup_script:poetry_entrypoint"
 
 [tool.black]
 line-length = 88

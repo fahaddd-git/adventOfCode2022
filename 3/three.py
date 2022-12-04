@@ -1,4 +1,5 @@
 from pathlib import Path
+from utilities import timer
 
 
 INPUT_FILE = Path(__file__).parent.resolve() / "input.txt"
@@ -21,15 +22,14 @@ def get_priority_value(letter):
         return ord(letter) - 96
     return ord(letter) - 38
 
-
+@timer
 def part_one():
     sum = 0
     with open(INPUT_FILE, "r") as inputfile:
         for line in inputfile.readlines():
             items = [*line.rstrip("\n")]
             half_index = int(len(items) / 2)
-            half_1, half_2 = set(items[:half_index]), set(items[half_index:])
-            [letter] = half_1 & half_2  # set intersection
+            [letter] = set(items[:half_index]) & set(items[half_index:])
             sum += get_priority_value(letter)
 
     return sum
@@ -40,21 +40,19 @@ find same item carried by each group of 3
 find priority value of item
 get total of all groups of 3
 """
-from itertools import zip_longest
-
-
+@timer
 def part_two():
     sum = 0
     with open(INPUT_FILE, "r") as inputfile:
         # use same iterator three times
-        # successive values are gotten each time
-        for three_lines_iter in zip_longest(*[inputfile] * 3):
-            elf_group = [set(line.rstrip("\n")) for line in three_lines_iter]
-            [letter] = elf_group[0] & elf_group[1] & elf_group[2]
+        # successive values are gotten each time.  "grouper" pattern
+        for elves_group_tuple in zip(*[inputfile] * 3):
+            elf_1, elf_2, elf_3 = [set(line.rstrip("\n")) for line in elves_group_tuple]
+            [letter] = elf_1 & elf_2 & elf_3
             sum += get_priority_value(letter)
 
     return sum
-
+# find -mindepth 2 -type f -name "*.py" -print0 | xargs -t -0 --replace bash -xc "poetry run python {}"
 
 if __name__ == "__main__":
     print(part_one())
