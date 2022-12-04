@@ -4,6 +4,7 @@ from utilities import timer
 
 INPUT_FILE = Path(__file__).parent.resolve() / "input.txt"
 
+
 @timer
 def part_one():
     with open(INPUT_FILE, "r") as inputfile:

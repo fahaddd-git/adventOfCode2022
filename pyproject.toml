@@ -23,7 +23,7 @@ black = "^22.10.0"
 setup = "utilities.setup_script:poetry_entrypoint"
 
 [tool.black]
-line-length = 88
+line-length = 120
 target-version = ['py310']
 
 [build-system]

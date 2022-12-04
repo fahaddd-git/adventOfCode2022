@@ -1,3 +1,3 @@
 from .timer import timer
 
-__all__=["timer"]
+__all__ = ["timer"]

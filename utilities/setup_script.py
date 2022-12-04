@@ -29,30 +29,19 @@ def main(day_number: int = typer.Argument(..., min=0, max=25)):
     day_path = Path(__file__).parents[1].resolve() / str(day_number)
     SESSION_COOKIE = os.getenv("SESSION_COOKIE")
     if SESSION_COOKIE is None:
-        print(
-            "[bold yellow] :ghost::person_pouting: SESSION_COOKIE not set in .env file[/bold yellow]"
-        )
+        print("[bold yellow] :ghost::person_pouting: SESSION_COOKIE not set in .env file[/bold yellow]")
         raise typer.Exit(code=1)
 
     try:
         os.mkdir(day_path)
         print("Creating folder")
     except FileExistsError:
-        print(
-            ":warning::warning: Folder already exists...skipping folder creation :star: :star:"
-        )
+        print(":warning::warning: Folder already exists...skipping folder creation :star: :star:")
     finally:
         with open(day_path / INPUT_FILE_NAMES, "w") as inputfile:
-            req = requests.get(
-                URL.substitute(num=day_number), cookies={"session": SESSION_COOKIE}
-            )
-            if (
-                req.text
-                == "Puzzle inputs differ by user.  Please log in to get your puzzle input.\n"
-            ):
-                print(
-                    ":giraffe::pancakes:Something went wrong...input not received. Aborting."
-                )
+            req = requests.get(URL.substitute(num=day_number), cookies={"session": SESSION_COOKIE})
+            if req.text == "Puzzle inputs differ by user.  Please log in to get your puzzle input.\n":
+                print(":giraffe::pancakes:Something went wrong...input not received. Aborting.")
                 raise typer.Exit(code=1)
             print(":camel::cactus: getting input")
             inputfile.write(req.text)
@@ -67,16 +56,14 @@ def main(day_number: int = typer.Argument(..., min=0, max=25)):
             "[dark_cyan]:fire_extinguisher::eagle: Enter desired filename without .py[/dark_cyan]"
         )
         shutil.copy(TEMPLATE_FILEPATH, day_path / f"{desired_template_filename}.py")
-        print(
-            "[bright_green]:zap::party_popper::vulcan_salute: Success! Template used[/bright_green]"
-        )
+        print("[bright_green]:zap::party_popper::vulcan_salute: Success! Template used[/bright_green]")
 
-    print(
-        f"[yellow1]:star::star: Ready to go at [dark_olive_green1]{day_path}[/dark_olive_green1]![/yellow1]"
-    )
+    print(f"[yellow1]:star::star: Ready to go at [dark_olive_green1]{day_path}[/dark_olive_green1]![/yellow1]")
+
 
 def poetry_entrypoint():
     typer.run(main)
+
 
 if __name__ == "__main__":
     typer.run(main)

@@ -22,6 +22,7 @@ def get_priority_value(letter):
         return ord(letter) - 96
     return ord(letter) - 38
 
+
 @timer
 def part_one():
     sum = 0
@@ -40,6 +41,8 @@ find same item carried by each group of 3
 find priority value of item
 get total of all groups of 3
 """
+
+
 @timer
 def part_two():
     sum = 0
@@ -52,6 +55,8 @@ def part_two():
             sum += get_priority_value(letter)
 
     return sum
+
+
 # find -mindepth 2 -type f -name "*.py" -print0 | xargs -t -0 --replace bash -xc "poetry run python {}"
 
 if __name__ == "__main__":

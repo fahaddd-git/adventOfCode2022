@@ -35,6 +35,7 @@ p1_beats_p2 = {"A": "Z", "B": "X", "C": "Y"}
 p2_beats_p1 = {"X": "C", "Y": "A", "Z": "B"}
 p2_beats_p1_reverse_lookup = {v: k for k, v in p2_beats_p1.items()}
 
+
 @timer
 def part_one():
     p2_score = 0
@@ -49,6 +50,7 @@ def part_one():
             elif p2_beats_p1[p2_shape] == p1_shape:
                 p2_score += 6
     return p2_score
+
 
 @timer
 def part_two():
