@@ -10,7 +10,6 @@ find completely overlapping
 account for which interval starts earlier
 """
 from collections import namedtuple
-from operator import itemgetter
 
 Interval = namedtuple("Interval", ["start", "end"])
 
