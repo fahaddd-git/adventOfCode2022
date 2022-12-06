@@ -15,55 +15,38 @@ if counter length < 4
 increment left and right sides of window
 add these to counter
 """
+
 from collections import Counter
+
+
+def solve_puzzle(window_size):
+    with open(INPUT_FILE, "r") as inputfile:
+        message = inputfile.readline().rstrip("\n")
+        left, right = 0, window_size
+        counter = Counter(message[left:right])
+        while right < len(message):
+            # window_size distinct chars
+            if len(counter) == window_size:
+                return right
+            # < window_size distinct chars
+            counter[message[left]] -= 1
+            if counter[message[left]] == 0:
+                del counter[message[left]]
+
+            counter[message[right]] += 1
+            right += 1
+            left += 1
+        raise IndexError("No match found")
 
 
 @timer
 def part_one():
-    with open(INPUT_FILE, "r") as inputfile:
-        message = inputfile.readline().rstrip("\n")
-        l, r = 0, 4
-        message_window = message[l:r]
-        counter = Counter(message_window)
-        while r <= len(message):
-            # 4 distinct chars
-            if len(counter) == 4:
-                return r
-            # < 4 distinct chars
-            counter.subtract(message[l])
-            if counter[message[l]] == 0:
-                del counter[message[l]]
-
-            counter.update(message[r])
-            r += 1
-            l += 1
-
-
-"""
-Find start of message marker
-
-"""
+    return solve_puzzle(4)
 
 
 @timer
 def part_two():
-    with open(INPUT_FILE, "r") as inputfile:
-        message = inputfile.readline().rstrip("\n")
-        l, r = 0, 14
-        message_window = message[l:r]
-        counter = Counter(message_window)
-        while r <= len(message):
-            # 4 distinct chars
-            if len(counter) == 14:
-                return r
-            # < 4 distinct chars
-            counter.subtract(message[l])
-            if counter[message[l]] == 0:
-                del counter[message[l]]
-
-            counter.update(message[r])
-            r += 1
-            l += 1
+    return solve_puzzle(14)
 
 
 if __name__ == "__main__":
