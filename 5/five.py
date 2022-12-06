@@ -25,6 +25,7 @@ parsed crates
 
 from collections import defaultdict
 from itertools import takewhile
+from re import findall
 
 
 def parse_puzzle():
@@ -42,33 +43,31 @@ def parse_puzzle():
         for idx, char in enumerate(found_crates, start=1):
             if char != " ":
                 crates_dict[idx].append(char)
-
-    return inputfp, crates_dict
-
-
-from re import findall
+    # lazily parse moves
+    moves_gen = (map(int, findall("\\d+", moves)) for moves in inputfp.readlines())
+    return inputfp, crates_dict, moves_gen
 
 
 @timer
 def part_one():
-    inputfile, crates_dict = parse_puzzle()
-    for moves in inputfile.readlines():
-        amount, from_, to = [*map(int, findall("\\d+", moves))]
+    inputfp, crates_dict, moves = parse_puzzle()
+    for move in moves:
+        amount, from_, to = move
         crates = [crates_dict[from_].pop() for _ in range(amount)]
         crates_dict[to].extend(crates)
-    inputfile.close()
+    inputfp.close()
     return "".join([x[-1] for x in crates_dict.values()])
 
 
 @timer
 def part_two():
-    inputfile, crates_dict = parse_puzzle()
-    for moves in inputfile.readlines():
-        amount, from_, to = [*map(int, findall("\\d+", moves))]  # [15, 6, 4]
+    inputfp, crates_dict, moves = parse_puzzle()
+    for move in moves:
+        amount, from_, to = move
         # can now move multiple crates. Pop multiple times and reverse
         reversed_crates = reversed([crates_dict[from_].pop() for _ in range(amount)])
         crates_dict[to].extend(reversed_crates)
-    inputfile.close()
+    inputfp.close()
     return "".join([x[-1] for x in crates_dict.values()])
 
 
