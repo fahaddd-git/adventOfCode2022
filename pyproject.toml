@@ -15,9 +15,13 @@ typer = "^0.7.0"
 rich = "^12.6.0"
 python-dotenv = "^0.21.0"
 
+[tool.pytest.ini_options]
+addopts = "-ra -q"
+
 
 [tool.poetry.group.dev.dependencies]
 black = "^22.10.0"
+pytest = "^7.2.0"
 
 [tool.poetry.scripts]
 setup = "utilities.setup_script:poetry_entrypoint"

@@ -1,5 +1,6 @@
 from pathlib import Path
 from utilities import timer
+import pytest
 
 
 INPUT_FILE = Path(__file__).parent.resolve() / "input.txt"
