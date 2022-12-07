@@ -1,5 +1,6 @@
 from pathlib import Path
 from utilities import timer
+from dataclasses import dataclass, field
 
 INPUT_FILE = Path(__file__).parent.resolve() / "input.txt"
 """
@@ -16,25 +17,18 @@ Files can be counted more than once
 """
 
 
+@dataclass(eq=False, frozen=True)
 class DirNode:
-    def __init__(self, name, parent, dirnode_children: list, filenode_children: list):
-        self.name = name
-        self.parent = parent
-        self.dirnode_children = dirnode_children
-        self.filenode_children = filenode_children
-
-        # def __eq__(self, other):
-        #     return self.name == other.name and self.parent == other.parent
+    name: str
+    parent: None
+    dirnode_children: dict = field(default_factory=dict)
+    filenode_children: set = field(default_factory=set)
 
 
+@dataclass(frozen=True)
 class FileNode:
-    def __init__(self, name, size, dir_parent: DirNode):
-        self.name = name
-        self.size = size
-        self.dir_parent = dir_parent
-
-    # def __eq__(self, other):
-    #     return self.name == other.name and self.size == other.size and self.dir_parent == other.dir_parent
+    name: str
+    size: int
 
 
 """
@@ -42,62 +36,32 @@ knowing files and folders is bounded by ls or cd (something that starts with $)
 """
 
 
-def process_input():
+def construct_filetree():
     with open(INPUT_FILE, "r") as inputfile:
-        file_stack = []
-        dir_stack = []
-        curr_dirnode = DirNode("/", None, [], [])
+        curr_dirnode = DirNode("/", None)
         root = curr_dirnode
         for line in inputfile.readlines():
             command = line.rstrip("\n").split(" ")
             # ls command
-            if command[0] == "$" and command[1] == "ls":
+            if command[1] == "ls":
                 continue
             # cd command. Process found dirs and files
-            if command[0] == "$" and command[1] == "cd":
-                # process files
-                while file_stack:
-                    file = file_stack.pop()
-                    fnode = FileNode(file[1], int(file[0]), curr_dirnode)
-                    if fnode not in curr_dirnode.filenode_children:
-                        curr_dirnode.filenode_children.append(fnode)
-                # process dirs
-                while dir_stack:
-                    dir = dir_stack.pop()
-                    # name, parent, dirnode_children, filenode_children
-                    dnode = DirNode(dir, curr_dirnode, [], [])
-                    if dnode not in curr_dirnode.dirnode_children:
-                        curr_dirnode.dirnode_children.append(dnode)
-                # go to next place in cd
+            if command[1] == "cd":
+                # up one level
                 if command[2] == "..":
                     curr_dirnode = curr_dirnode.parent
                 # follow to whatever dir
                 else:
-                    for item in curr_dirnode.dirnode_children:
-                        if item.name == command[2]:
-                            curr_dirnode = item
-                            break
-            # [b, ...]
+                    curr_dirnode = curr_dirnode.dirnode_children.get(command[2], curr_dirnode)
+            # process dirs
             elif command[0] == "dir":
-                # folder name
-                dir_stack.append(command[1])
-            # file [123123, "b.txt"]
+                dnode = DirNode(command[1], curr_dirnode)
+                curr_dirnode.dirnode_children[dnode.name] = dnode
+            # process files
             else:
-                file_stack.append(command)
+                fnode = FileNode(command[1], int(command[0]))
+                curr_dirnode.filenode_children.add(fnode)
 
-    # copy pasta from before. TODO: make better
-    while file_stack:
-        file = file_stack.pop()
-        fnode = FileNode(file[1], int(file[0]), curr_dirnode)
-        if fnode not in curr_dirnode.filenode_children:
-            curr_dirnode.filenode_children.append(fnode)
-    # process dirs
-    while dir_stack:
-        dir = dir_stack.pop()
-        # name, parent, dirnode_children, filenode_children
-        dnode = DirNode(dir, curr_dirnode, [], [])
-        if dnode not in curr_dirnode.dirnode_children:
-            curr_dirnode.dirnode_children.append(dnode)
     return root
 
 
@@ -111,7 +75,7 @@ dir can have 1 parent
 
 
 def calculate_dir_sizes():
-    stack = [process_input()]
+    stack = [construct_filetree()]
     visited = dict()
     while stack:
         # [dirnode(a), dirnode(d)]
@@ -120,21 +84,25 @@ def calculate_dir_sizes():
             # get sum
             fnode_sums = sum([f.size for f in node.filenode_children])
             visited[node] = fnode_sums
-            other_node = node
+            parent_node = node.parent
             # traverse up tree updating pointers
-            while other_node.parent:
-                visited[other_node.parent] += fnode_sums
-                other_node = other_node.parent
-        for item in node.dirnode_children:
+            while parent_node:
+                visited[parent_node] += fnode_sums
+                parent_node = parent_node.parent
+        for item in node.dirnode_children.values():
             if item not in visited:
                 stack.append(item)
 
-    return visited
+    return visited.values()
+
+
+from itertools import filterfalse
 
 
 @timer
 def part_one():
-    return sum([x for x in calculate_dir_sizes().values() if x <= 100000])
+    LARGEST_DIR_SIZE = 100000
+    return sum(filterfalse(lambda x: x > LARGEST_DIR_SIZE, calculate_dir_sizes()))
 
 
 """
@@ -151,9 +119,9 @@ find closest dir size to (needed unused space - curr avail size)
 def part_two():
     TOTAL_DISK_SPACE = 70000000
     NEEDED_UNUSED_SPACE = 30000000
-    dir_sizes = calculate_dir_sizes().values()
-    filtered = [x for x in dir_sizes if max(dir_sizes) - (TOTAL_DISK_SPACE - NEEDED_UNUSED_SPACE) <= x]
-    return min(filtered)
+    dir_sizes = calculate_dir_sizes()
+    min_space = max(dir_sizes) - (TOTAL_DISK_SPACE - NEEDED_UNUSED_SPACE)
+    return min(filterfalse(lambda x: x <= min_space, dir_sizes))
 
 
 if __name__ == "__main__":
