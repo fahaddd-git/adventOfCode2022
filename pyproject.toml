@@ -17,7 +17,7 @@ python-dotenv = "^0.21.0"
 
 [tool.pytest.ini_options]
 addopts = "-ra -q"
-
+norecursedirs = ['utilities', '*.egg', '.*', '_darcs', 'build', 'CVS', 'dist', 'node_modules', 'venv', '{arch}']
 
 [tool.poetry.group.dev.dependencies]
 black = "^22.10.0"
