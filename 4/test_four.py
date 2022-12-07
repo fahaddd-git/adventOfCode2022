@@ -5,7 +5,7 @@ from four import part_one, part_two
 MODULE_NAME = "four"
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="module")
 def input():
     return """2-4,6-8
 2-3,4-5

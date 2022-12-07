@@ -5,7 +5,7 @@ from five import part_one, part_two
 MODULE_NAME = "five"
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="module")
 def input():
     return """    [D]    
 [N] [C]    
