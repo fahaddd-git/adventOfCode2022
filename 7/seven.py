@@ -96,13 +96,10 @@ def calculate_dir_sizes():
     return visited.values()
 
 
-from itertools import filterfalse
-
-
 @timer
 def part_one():
     LARGEST_DIR_SIZE = 100000
-    return sum(filterfalse(lambda x: x > LARGEST_DIR_SIZE, calculate_dir_sizes()))
+    return sum(filter(lambda x: x <= LARGEST_DIR_SIZE, calculate_dir_sizes()))
 
 
 """
@@ -121,7 +118,7 @@ def part_two():
     NEEDED_UNUSED_SPACE = 30000000
     dir_sizes = calculate_dir_sizes()
     min_space = max(dir_sizes) - (TOTAL_DISK_SPACE - NEEDED_UNUSED_SPACE)
-    return min(filterfalse(lambda x: x <= min_space, dir_sizes))
+    return min(filter(lambda x: x > min_space, dir_sizes))
 
 
 if __name__ == "__main__":
