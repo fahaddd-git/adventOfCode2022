@@ -55,27 +55,25 @@ visible if other trees shorter than      in at least one direction
 edge trees always visible
 
 """
-from collections import namedtuple
-
-Coordinates = namedtuple("Coordinates", ["row", "col"])
-
 
 def check_ascending(input):
     """
-    a list is ascending if each previous digit < curr
+    a list is max[rest of list] < curr
     """
-    return all(input[x] < input[-1] for x in range(len(input) - 1))
+    return max(input[:-1]) < input[-1]
 
 
-def check_directions(grid, coords: Coordinates):  # (x,y) (row, col)
+def check_directions(grid, coords):  # (x,y) (row, col)
     def check_l_r():
-        left = grid[coords.row][: coords.col + 1]
-        right = grid[coords.row][: coords.col - 1 : -1]
+        row, col = coords
+        left = grid[row][: col + 1]
+        right = grid[row][: col - 1 : -1]
         return check_ascending(left) or check_ascending(right)
 
     def check_t_b():
-        top = [grid[x][coords.col] for x in range(coords.row + 1)]
-        bottom = [grid[y][coords.col] for y in range(len(grid) - 1, coords.row - 1, -1)]
+        row, col = coords
+        top = [grid[x][col] for x in range(row + 1)]
+        bottom = [grid[y][col] for y in range(len(grid) - 1, row - 1, -1)]
         return check_ascending(top) or check_ascending(bottom)
 
     return check_l_r() or check_t_b()
@@ -88,7 +86,7 @@ def part_one():
         visible = len(grid[0]) * 2 + (len(grid) * 2 - 4)  # outer part
         for row in range(1, len(grid) - 1):
             for col in range(1, len(grid[0]) - 1):
-                if check_directions(grid, Coordinates(row, col)):
+                if check_directions(grid, (row, col)):
                     visible += 1
         return visible
 
@@ -116,15 +114,17 @@ def calc_score(input):
     return total - 1
 
 
-def find_total_score(grid, coords: Coordinates):  # (x,y) (row, col)
+def find_total_score(grid, coords):  # (x,y) (row, col)
     def calc_l_r():
-        left = grid[coords.row][: coords.col + 1]
-        right = grid[coords.row][: coords.col - 1 : -1]
+        row, col = coords
+        left = grid[row][: col + 1]
+        right = grid[row][: col - 1 : -1]
         return calc_score(left) * calc_score(right)
 
     def calc_t_b():
-        top = [grid[x][coords.col] for x in range(coords.row + 1)]
-        bottom = [grid[y][coords.col] for y in range(len(grid) - 1, coords.row - 1, -1)]
+        row, col = coords
+        top = [grid[x][col] for x in range(row + 1)]
+        bottom = [grid[y][col] for y in range(len(grid) - 1, row - 1, -1)]
         return calc_score(top) * calc_score(bottom)
 
     return calc_l_r() * calc_t_b()
@@ -138,7 +138,7 @@ def part_two():
         max_score = 0
         for row in range(len(grid)):
             for col in range(len(grid[0])):
-                max_score = max(max_score, find_total_score(grid, Coordinates(row, col)))
+                max_score = max(max_score, find_total_score(grid, (row, col)))
         return max_score
 
 
