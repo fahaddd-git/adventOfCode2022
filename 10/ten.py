@@ -24,25 +24,24 @@ signal strength = cycle num * value of x register   during 20th, and then every 
 @timer
 def part_one():
     with open(INPUT_FILE, "r") as inputfile:
-        cycles = 0
+        cycles = 1
         register = 1
         signal_strengths = []
-        cycle_multipliers = {20: 20, 60: 60, 100: 100, 140: 140, 180: 180, 220: 220}
+        cycle_multipliers = {y + 20: y + 20 for y in [x * 40 for x in range(0, 6)]}
         for instruction in (line.rstrip("\n").split() for line in inputfile.readlines()):
-            r = 0
-            x = 0
+            num_cycles = 0
+            value = 0
             match instruction:
                 case ("noop",):
-                    r = 1
+                    num_cycles = 1
                 case ("addx", amount):
-                    r = 2
-                    x = amount
-            for _ in range(r):
+                    num_cycles = 2
+                    value = int(amount)
+            for _ in range(num_cycles):
                 if cycles in cycle_multipliers:
-                    multiplied = register * cycle_multipliers[cycles]
-                    signal_strengths.append(multiplied)
+                    signal_strengths.append(register * cycle_multipliers[cycles])
                 cycles += 1
-            register += int(x)
+            register += value
         return sum(signal_strengths)
 
 
@@ -53,6 +52,13 @@ def part_one():
 
 register tells middle of sprite
 """
+from dataclasses import dataclass
+
+
+@dataclass
+class Coords:
+    x = 0
+    y = 0
 
 
 @timer
@@ -60,31 +66,30 @@ def part_two():
     with open(INPUT_FILE, "r") as inputfile:
         cycles = 0
         register = 1
-        pos = [0, 0]  # row, col
-        crt = [["." for _ in range(40)] for x in range(6)]
+        pos = Coords()  # row, col
+        crt = [["." for _ in range(40)] for _ in range(6)]
         for instruction in (line.rstrip("\n").split() for line in inputfile.readlines()):
-            r = 0
-            x = 0
+            num_cycles = 0
+            value = 0
             match instruction:
                 case ("noop",):
-                    r = 1
+                    num_cycles = 1
                 case ("addx", amount):
-                    r = 2
-                    x = amount
-            for _ in range(r):
+                    num_cycles = 2
+                    value = int(amount)
+            for _ in range(num_cycles):
                 cycles += 1
-                if pos[1] in [register - 1, register, register + 1]:
-                    crt[pos[0]][pos[1]] = "#"
-                pos[1] += 1
+                if pos.x in [register - 1, register, register + 1]:
+                    crt[pos.y][pos.x] = "#"
+                pos.x += 1
                 if cycles % 40 == 0:
-                    pos = [pos[0] + 1, 0]
-            register += int(x)
-        for row in crt:
-            print(row, sep="\n")
-        return crt
+                    crt[pos.y].append("\n")  # for the purposes of printing
+                    pos.y += 1
+                    pos.x = 0
+            register += value
+        return "".join(["".join(row) for row in crt])
 
 
 if __name__ == "__main__":
     print(part_one())
-
     print(part_two())
