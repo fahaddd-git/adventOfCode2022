@@ -56,6 +56,7 @@ edge trees always visible
 
 """
 
+
 def check_ascending(input):
     """
     a list is max[rest of list] < curr
