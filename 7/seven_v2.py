@@ -5,6 +5,7 @@ from utilities import timer
 INPUT_FILE = Path(__file__).parent.resolve() / "input.txt"
 
 from collections import defaultdict
+from itertools import accumulate
 
 
 def parse_input():
@@ -20,8 +21,8 @@ def parse_input():
                     continue
                 case (size, _):
                     size = int(size)
-                    for x in (tuple(dirstack[: i + 1]) for i in range(len(dirstack))):
-                        dirs[x] += size
+                    for p in list(accumulate(dirstack)):
+                        dirs[p] += size
 
     return dirs
 

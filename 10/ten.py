@@ -27,7 +27,6 @@ def part_one():
         cycles = 1
         register = 1
         signal_strengths = []
-        cycle_multipliers = {y + 20: y + 20 for y in [x * 40 for x in range(0, 6)]}
         for instruction in (line.rstrip("\n").split() for line in inputfile.readlines()):
             num_cycles = 0
             value = 0
@@ -38,8 +37,8 @@ def part_one():
                     num_cycles = 2
                     value = int(amount)
             for _ in range(num_cycles):
-                if cycles in cycle_multipliers:
-                    signal_strengths.append(register * cycle_multipliers[cycles])
+                if cycles == 20 or (cycles - 20) % 40 == 0:
+                    signal_strengths.append(register * cycles)
                 cycles += 1
             register += value
         return sum(signal_strengths)
@@ -53,6 +52,7 @@ def part_one():
 register tells middle of sprite
 """
 from dataclasses import dataclass
+from textwrap import wrap
 
 
 @dataclass
@@ -83,11 +83,11 @@ def part_two():
                     crt[pos.y][pos.x] = "#"
                 pos.x += 1
                 if cycles % 40 == 0:
-                    crt[pos.y].append("\n")  # for the purposes of printing
                     pos.y += 1
                     pos.x = 0
             register += value
-        return "".join(["".join(row) for row in crt])
+        res = "".join(["".join(row) for row in crt])
+        return "\n".join(wrap(res, width=40))
 
 
 if __name__ == "__main__":
