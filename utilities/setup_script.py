@@ -17,6 +17,8 @@ URL = Template("https://adventofcode.com/2022/day/$num/input")
 INPUT_FILE_NAMES = "input.txt"
 TEMPLATE_FILENAME = "template.py"
 TEMPLATE_FILEPATH = Path(__file__).parent.resolve() / TEMPLATE_FILENAME
+TESTING_TEMPLATE_FILENAME = "testing_template.py"
+TESTING_TEMPLATE_FILEPATH = Path(__file__).parent.resolve() / TESTING_TEMPLATE_FILENAME
 
 
 def main(day_number: int = typer.Argument(..., min=0, max=25)):
@@ -56,6 +58,17 @@ def main(day_number: int = typer.Argument(..., min=0, max=25)):
             "[dark_cyan]:fire_extinguisher::eagle: Enter desired filename without .py[/dark_cyan]"
         )
         shutil.copy(TEMPLATE_FILEPATH, day_path / f"{desired_template_filename}.py")
+        print("[bright_green]:zap::party_popper::vulcan_salute: Success! Template used[/bright_green]")
+
+    use_tests = Confirm.ask(
+        f"[blue_violet]:warning::warning:Use tests? You should...:fire_extinguisher::fire_extinguisher:[/blue_violet]"
+    )
+
+    if use_tests:
+        desired_tests_filename = Prompt.ask(
+            "[dark_cyan]:fire_extinguisher::eagle: Enter desired filename without .py[/dark_cyan]"
+        )
+        shutil.copy(TESTING_TEMPLATE_FILEPATH, day_path / f"{desired_tests_filename}.py")
         print("[bright_green]:zap::party_popper::vulcan_salute: Success! Template used[/bright_green]")
 
     print(f"[yellow1]:star::star: Ready to go at [dark_olive_green1]{day_path}[/dark_olive_green1]![/yellow1]")
