@@ -99,6 +99,8 @@ class Knot:
         if abs(dist_x) > 1 or abs(dist_y) > 1:
             follower.x += self.determine_sign(dist_x)
             follower.y += self.determine_sign(dist_y)
+            return True
+        return False
 
 
 def solve(rope_length):
@@ -110,7 +112,8 @@ def solve(rope_length):
             for _ in range(int(spaces)):
                 rope[0].move(direction)
                 for leader, follower in pairwise(rope):
-                    leader.drag_follower(follower)
+                    if not leader.drag_follower(follower):
+                        break
                 seen.add((tail.x, tail.y))
         return len(seen)
 

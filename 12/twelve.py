@@ -28,23 +28,18 @@ new pos- old pos >= -1
 
 
 def create_matrix():
+    """
+    ['Sabqponm',
+     'abcryxxl',
+     'accszExk',
+     'acctuvwj',
+     'abdefghi']
+
+     matrix not needed
+    """
     with open(INPUT_FILE, "r") as inputfile:
         input = inputfile.read().splitlines()
         return input
-
-
-def get_start_end(matrix):
-    start, end = (0, 0), (0, 0)
-    for idx, row in enumerate(matrix):
-        try:
-            start = (idx, row.index("S"))
-        except Exception:
-            pass
-        try:
-            end = (idx, row.index("E"))
-        except Exception:
-            pass
-    return start, end
 
 
 import heapq
@@ -61,13 +56,8 @@ def create_adjacency_map(grid):
     # map chars to value
     letter_values = {char: value for value, char in enumerate(ascii_lowercase, start=1)}
     letter_values |= {"S": letter_values["a"], "E": letter_values["z"]}
-    """
-    ['Sabqponm', 
-     'abcryxxl', 
-     'accszExk', 
-     'acctuvwj', 
-     'abdefghi']
-    """
+
+    start = end = tuple()
     rows = len(grid)
     cols = len(grid[0])
     directions = {"u": (-1, 0), "d": (1, 0), "l": (0, -1), "r": (0, 1)}  # possible ways to move
@@ -83,13 +73,19 @@ def create_adjacency_map(grid):
                 # start at End aka z
                 if letter_values[grid[new_row][new_col]] - letter_values[curr_value] >= -1:
                     adj_map[(curr_location)].append((new_row, new_col))
-    return adj_map
+                    match curr_value:  # find start and end locations
+                        case "E":
+                            end = curr_location
+                        case "S":
+                            start = curr_location
+    return adj_map, start, end
 
 
 def find_moves_djikstra(adj_map, start):
     """
     djikstra's algo
     each path length aka edge is 1 in this problem
+    gives lowest cost (distance) from start to all other vertices
     """
     heap = [(0, start)]  # (distance, (row,col))
     distances = {k: float("inf") for k in adj_map.keys()}
@@ -103,17 +99,20 @@ def find_moves_djikstra(adj_map, start):
     return distances
 
 
+from functools import cache
+
+
+@cache
 def create_paths():
     matrix = create_matrix()
-    start, end = get_start_end(matrix)
-    adj_map = create_adjacency_map(matrix)
+    adj_map, start, end = create_adjacency_map(matrix)
     dijkstra_result = find_moves_djikstra(adj_map, end)
-    return dijkstra_result, start, end
+    return matrix, dijkstra_result, start, end
 
 
 @timer
 def part_one():
-    paths, start, end = create_paths()
+    _, paths, start, __ = create_paths()
     return paths[start]
 
 
@@ -123,9 +122,8 @@ def part_two():
     get lowest cost path to E from any a path
     dijkstra's gives cost from start vertex to all other vertices
     """
-    paths, *_ = create_paths()
-    matrix = create_matrix()
-    return min(l for (x, y), l in paths.items() if matrix[x][y] in "aS")
+    matrix, paths, *_ = create_paths()
+    return min(dist for (x, y), dist in paths.items() if matrix[x][y] in "aS")
 
 
 if __name__ == "__main__":

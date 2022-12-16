@@ -59,7 +59,7 @@ def parse_monkeys(num_monkeys, functions):
         for all_monkeys in zip(*[inputfile] * 7):
 
             monkey_input = [findall("\\d+", x.strip()) for x in all_monkeys if x.strip() != ""]
-            print(monkey_input)
+            # print(monkey_input)
             for idx, input in enumerate(monkey_input):
                 match idx:
                     case 0:
